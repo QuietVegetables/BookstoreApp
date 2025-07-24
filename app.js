@@ -94,11 +94,11 @@ app.get('/',  (req, res) => {
     res.render('index', {user: req.session.user} );
 });
 
-app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
+app.get('/admin', checkAuthenticated, checkAdmin, (req, res) => {
     // Fetch data from MySQL
     connection.query('SELECT * FROM products', (error, results) => {
       if (error) throw error;
-      res.render('inventory', { products: results, user: req.session.user });
+      res.render('admin', { products: results, user: req.session.user });
     });
 });
 
@@ -147,7 +147,7 @@ app.post('/login', (req, res) => {
             if(req.session.user.role == 'user')
                 res.redirect('/shopping');
             else
-                res.redirect('/inventory');
+                res.redirect('/admin');
         } else {
             // Invalid credentials
             req.flash('error', 'Invalid email or password.');
@@ -210,31 +210,31 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-app.get('/product/:id', checkAuthenticated, (req, res) => {
-  // Extract the product ID from the request parameters
-  const productId = req.params.id;
+app.get('/book/:id', checkAuthenticated, (req, res) => {
+  // Extract the book ID from the request parameters
+  const bookId = req.params.id;
 
-  // Fetch data from MySQL based on the product ID
-  connection.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
+  // Fetch data from MySQL based on the book ID
+  connection.query('SELECT * FROM books WHERE bookId = ?', [bookId], (error, results) => {
       if (error) throw error;
 
-      // Check if any product with the given ID was found
+      // Check if any book with the given ID was found
       if (results.length > 0) {
-          // Render HTML page with the product data
-          res.render('product', { product: results[0], user: req.session.user  });
+          // Render HTML page with the book data
+          res.render('book', { book: results[0], user: req.session.user  });
       } else {
-          // If no product with the given ID was found, render a 404 page or handle it accordingly
-          res.status(404).send('Product not found');
+          // If no book with the given ID was found, render a 404 page or handle it accordingly
+          res.status(404).send('book not found');
       }
   });
 });
 
-app.get('/addProduct', checkAuthenticated, checkAdmin, (req, res) => {
-    res.render('addProduct', {user: req.session.user } ); 
+app.get('/addBook', checkAuthenticated, checkAdmin, (req, res) => {
+    res.render('addBook', {user: req.session.user } ); 
 });
 
-app.post('/addProduct', upload.single('image'),  (req, res) => {
-    // Extract product data from the request body
+app.post('/addBook', upload.single('image'),  (req, res) => {
+    // Extract book data from the request body
     const { name, quantity, price} = req.body;
     let image;
     if (req.file) {
@@ -243,16 +243,16 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
         image = null;
     }
 
-    const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    // Insert the new product into the database
+    const sql = 'INSERT INTO books (bookName, quantity, price, image) VALUES (?, ?, ?, ?)';
+    // Insert the new book into the database
     connection.query(sql , [name, quantity, price, image], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
-            console.error("Error adding product:", error);
-            res.status(500).send('Error adding product');
+            console.error("Error adding book:", error);
+            res.status(500).send('Error adding book');
         } else {
             // Send a success response
-            res.redirect('/inventory');
+            res.redirect('/admin');
         }
     });
 });
@@ -294,22 +294,22 @@ app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
             res.status(500).send('Error updating product');
         } else {
             // Send a success response
-            res.redirect('/inventory');
+            res.redirect('/admin');
         }
     });
 });
 
-app.get('/deleteProduct/:id', (req, res) => {
-    const productId = req.params.id;
+app.get('/deleteBook/:id', (req, res) => {
+    const bookId = req.params.id;
 
-    connection.query('DELETE FROM products WHERE productId = ?', [productId], (error, results) => {
+    connection.query('DELETE FROM books WHERE bookId = ?', [bookId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
-            console.error("Error deleting product:", error);
-            res.status(500).send('Error deleting product');
+            console.error("Error deleting book:", error);
+            res.status(500).send('Error deleting book');
         } else {
             // Send a success response
-            res.redirect('/inventory');
+            res.redirect('/admin');
         }
     });
 });
