@@ -94,7 +94,9 @@ app.get('/',  (req, res) => {
     res.render('index', {user: req.session.user} );
 });
 
-app.get(["/admin/:search", "/shopping/:search"], (req, res) => {
+// Query function logic
+
+app.get(["/admin/:search", "/shopping/:search"], checkAuthenticated(), (req, res) => {
     const sql = "SELECT * FROM products WHERE productName = ?";
     connection.query(sql, [req.params.search]), (err, results) => {
         if (err) {
@@ -102,6 +104,7 @@ app.get(["/admin/:search", "/shopping/:search"], (req, res) => {
         };
 
         if (req.path == "/admin/:search") {
+            checkAdmin()
             res.render("admin", { products: results, user: req.session.id})
         } else {
             res.render("shopping", { products: results, user: req.session.id})
