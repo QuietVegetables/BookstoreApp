@@ -94,6 +94,21 @@ app.get('/',  (req, res) => {
     res.render('index', {user: req.session.user} );
 });
 
+app.get(["/admin/:search", "/shopping/:search"], (req, res) => {
+    const sql = "SELECT * FROM products WHERE productName = ?";
+    connection.query(sql, [req.params.search]), (err, results) => {
+        if (err) {
+            throw err;
+        };
+
+        if (req.path == "/admin/:search") {
+            res.render("admin", { products: results, user: req.session.id})
+        } else {
+            res.render("shopping", { products: results, user: req.session.id})
+        }
+    };
+})
+
 app.get('/admin', checkAuthenticated, checkAdmin, (req, res) => {
     // Fetch data from MySQL
     connection.query('SELECT * FROM products', (error, results) => {
