@@ -103,7 +103,7 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
             throw err;
         };
 
-        if (req.path == "/admin/search") {
+        if (req.baseUrl == "/admin") {
             checkAdmin;
             res.render("admin", { products: results, user: req.session.id});
         } else {
