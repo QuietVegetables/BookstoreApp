@@ -146,16 +146,16 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    // Validate email and password
-    if (!email || !password) {
+    // Validate username and password
+    if (!username || !password) {
         req.flash('error', 'All fields are required.');
         return res.redirect('/login');
     }
 
-    const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
-    connection.query(sql, [email, password], (err, results) => {
+    const sql = 'SELECT * FROM users WHERE username = ? AND password = SHA1(?)';
+    connection.query(sql, [username, password], (err, results) => {
         if (err) {
             throw err;
         }
