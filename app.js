@@ -103,6 +103,8 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
             throw err;
         };
 
+        // Add in code to handle no matched items
+
         if (req.baseUrl == "/admin") {
             checkAdmin;
             res.render("admin", { products: results, user: req.session.id});
