@@ -96,21 +96,21 @@ app.get('/',  (req, res) => {
 
 // Query function logic
 
-// app.get("/:role/search", checkAuthenticated, (req, res) => {
-//     const sql = "SELECT * FROM products WHERE productName = ?";
-//     connection.query(sql, [req.query.q]), (err, results) => {
-//         if (err) {
-//             throw err;
-//         };
+app.get("/:role/search", checkAuthenticated, (req, res) => {
+    const sql = "SELECT * FROM products WHERE productName = ?";
+    connection.query(sql, [req.query.q]), (err, results) => {
+        if (err) {
+            throw err;
+        };
 
-//         if (req.path == "/admin/:search") {
-//             checkAdmin;
-//             res.render("admin", { products: results, user: req.session.id});
-//         } else {
-//             res.render("shopping", { products: results, user: req.session.id});
-//         };
-//     };
-// });
+        if (req.path == "/admin/search") {
+            checkAdmin;
+            res.render("admin", { products: results, user: req.session.id});
+        } else {
+            res.render("shopping", { products: results, user: req.session.id});
+        };
+    };
+});
 
 app.get('/admin', checkAuthenticated, checkAdmin, (req, res) => {
     // Fetch data from MySQL
