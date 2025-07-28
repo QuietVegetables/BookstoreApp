@@ -143,6 +143,7 @@ app.post('/register', validateRegistration, (req, res) => {
 });
 
 app.get('/login', (req, res) => {
+    console.log("test2")
     res.render('login', { messages: req.flash('success'), errors: req.flash('error') });
 });
 
