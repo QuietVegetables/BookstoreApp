@@ -115,6 +115,7 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
 });
 
 app.get('/admin', checkAuthenticated, checkAdmin, (req, res) => {
+    console.log("test1")
     // Fetch data from MySQL
     connection.query('SELECT * FROM books', (error, results) => {
       if (error) throw error;
