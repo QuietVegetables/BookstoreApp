@@ -203,6 +203,33 @@ app.post('/addBook', upload.single('image'), (req, res) => {
     });
 });
 
+app.get('/books', checkAuthenticated, (req, res) => {
+    const sql = "SELECT * FROM books";
+    connection.query(sql, (err, results) => {
+        if (err) return res.send('Error fetching books');
+        res.render('books/list', { books: results, user: req.session.user });
+    });
+});
+
+app.get('/books/edit/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const sql = "SELECT * FROM books WHERE bookId = ?";
+    connection.query(sql, [req.params.id], (err, results) => {
+        if (err || results.length === 0) return res.send('Book not found');
+        res.render('books/edit', { book: results[0], user: req.session.user });
+    });
+});
+
+app.post('/books/edit/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const { bookName, quantity, price, description } = req.body;
+    const sql = UPDATE books SET bookName = ?, quantity = ?, price = ?, description = ? WHERE bookId = ?;
+    const values = [bookName, quantity, price, description, req.params.id];
+
+    connection.query(sql, values, (err) => {
+        if (err) return res.send('Failed to update book');
+        res.redirect('/books');
+    });
+});
+
 app.get('/updateBook/:id', checkAuthenticated, checkAdmin, (req, res) => {
     const bookId = req.params.id;
     connection.query('SELECT * FROM books WHERE bookId = ?', [bookId], (error, results) => {
