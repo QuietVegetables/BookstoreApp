@@ -223,7 +223,7 @@ app.get('/books/edit/:id', checkAuthenticated, checkAdmin, (req, res) => {
 
 app.post('/books/edit/:id', checkAuthenticated, checkAdmin, (req, res) => {
     const { bookName, quantity, price, description } = req.body;
-    const sql = UPDATE books SET bookName = ?, quantity = ?, price = ?, description = ? WHERE bookId = ?;
+    const sql = "UPDATE books SET bookName = ?, quantity = ?, price = ?, description = ? WHERE bookId = ?";
     const values = [bookName, quantity, price, description, req.params.id];
 
     connection.query(sql, values, (err) => {
