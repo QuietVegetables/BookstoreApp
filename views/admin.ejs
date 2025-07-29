@@ -46,7 +46,7 @@
       <tbody>
         <% for(let i=0; i < books.length; i++) { %>
           <tr>
-            <td><a href="/book/<%= books[i].bookId %>" ><%= products[i].productName %></a></td>
+            <td><a href="/book/<%= books[i].bookId %>" ><%= books[i].bookName %></a></td>
             <td><img src = "images/<%= books[i].image %>" width="20%"></td>
             <td><%= books[i].quantity %></td>
             <td>$<%= books[i].price.toFixed(2) %></td>
