@@ -78,8 +78,10 @@ app.get('/', (req, res) => {
 
 app.get("/:role/search", (req, res => {
     const sql = "SELECT * FROM books WHERE bookName = ?";
-    connection.query(sql, [req.query.q], (err, res) => {
+    connection.query(sql, [req.query.q], (err, results) => {
         if (err) throw err;
+
+        res.render("admin", { books: results, user: req.session.user});
     })
 }))
 
@@ -202,7 +204,7 @@ app.get('/addBook', checkAuthenticated, checkAdmin, (req, res) => {
 });
 
 app.post('/addBook', upload.single('image'), (req, res) => {
-    const { name, quantity, price, category } = req.body;
+    const { name, quantity, price } = req.body;
     let image = req.file ? req.file.filename : null;
     const sql = 'INSERT INTO books (bookName, quantity, price, image, category) VALUES (?, ?, ?, ?, ?)';
     connection.query(sql, [name, quantity, price, image, category], (error, results) => {
