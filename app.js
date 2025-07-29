@@ -8,13 +8,12 @@ const app = express();
 // Set up multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'public/images'); // Directory to save uploaded files
+        cb(null, 'public/images');
     },
     filename: (req, file, cb) => {
-        cb(null, file.originalname); 
+        cb(null, file.originalname);
     }
 });
-
 const upload = multer({ storage: storage });
 
 const connection = mysql.createConnection({
@@ -23,7 +22,7 @@ const connection = mysql.createConnection({
     user: 'C237database_structure',
     password: 'e73f388370e198a96e7777b8bf7b3a1516849323',
     database: 'C237database_structure'
-  });
+});
 
 connection.connect((err) => {
     if (err) {
@@ -33,54 +32,36 @@ connection.connect((err) => {
     console.log('Connected to MySQL database');
 });
 
-// Set up view engine
 app.set('view engine', 'ejs');
-//  enable static files
 app.use(express.static('public'));
-// enable form processing
-app.use(express.urlencoded({
-    extended: false
-}));
+app.use(express.urlencoded({ extended: false }));
 
-//TO DO: Insert code for Session Middleware below 
 app.use(session({
     secret: 'secret',
     resave: false,
     saveUninitialized: true,
-    // Session expires after 1 week of inactivity
-    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 } 
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 }
 }));
 
 app.use(flash());
 
-// Middleware to check if user is logged in
 const checkAuthenticated = (req, res, next) => {
-    if (req.session.user) {
-        return next();
-    } else {
-        req.flash('error', 'Please log in to view this resource');
-        res.redirect('/login');
-    }
+    if (req.session.user) return next();
+    req.flash('error', 'Please log in to view this resource');
+    res.redirect('/login');
 };
 
-// Middleware to check if user is admin
 const checkAdmin = (req, res, next) => {
-    if (req.session.user.role === 'admin') {
-        return next();
-    } else {
-        req.flash('error', 'Access denied');
-        res.redirect('/shopping');
-    }
+    if (req.session.user.role === 'admin') return next();
+    req.flash('error', 'Access denied');
+    res.redirect('/shopping');
 };
 
-// Middleware for form validation
 const validateRegistration = (req, res, next) => {
     const { username, email, password, address, contact, role } = req.body;
-
     if (!username || !email || !password || !address || !contact || !role) {
         return res.status(400).send('All fields are required.');
     }
-    
     if (password.length < 6) {
         req.flash('error', 'Password should be at least 6 or more characters long');
         req.flash('formData', req.body);
@@ -89,133 +70,95 @@ const validateRegistration = (req, res, next) => {
     next();
 };
 
-// Define routes
-app.get('/',  (req, res) => {
-    res.render('index', {user: req.session.user} );
-});
-
-// Query function logic
-
-app.get("/:role/search", checkAuthenticated, (req, res) => {
-    const sql = "SELECT * FROM products WHERE productName = ?";
-    connection.query(sql, [req.query.q]), (err, results) => {
-        if (err) {
-            throw err;
-        };
-
-        // Add in code to handle no matched items
-
-        if (req.baseUrl == "/admin") {
-            checkAdmin;
-            res.render("admin", { products: results, user: req.session.id});
-        } else {
-            res.render("shopping", { products: results, user: req.session.id});
-        };
-    };
+app.get('/', (req, res) => {
+    res.render('index', { user: req.session.user });
 });
 
 app.get('/admin', checkAuthenticated, checkAdmin, (req, res) => {
-    // Fetch data from MySQL
-    connection.query('SELECT * FROM products', (error, results) => {
-      if (error) throw error;
-      res.render('admin', { products: results, user: req.session.user });
+    connection.query('SELECT * FROM books', (error, results) => {
+        if (error) throw error;
+        res.render('admin', { books: results, user: req.session.user });
     });
 });
 
 app.get('/register', (req, res) => {
-    res.render('register', { messages: req.flash('error'), formData: req.flash('formData')[0] });
+    res.render('register', {
+        messages: req.flash('error'),
+        formData: req.flash('formData')[0]
+    });
 });
 
 app.post('/register', validateRegistration, (req, res) => {
-
     const { username, email, password, address, contact, role } = req.body;
-
     const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, SHA1(?), ?, ?, ?)';
     connection.query(sql, [username, email, password, address, contact, role], (err, result) => {
-        if (err) {
-            throw err;
-        }
-        console.log(result);
+        if (err) throw err;
         req.flash('success', 'Registration successful! Please log in.');
         res.redirect('/login');
     });
 });
 
 app.get('/login', (req, res) => {
-    res.render('login', { messages: req.flash('success'), errors: req.flash('error') });
+    res.render('login', {
+        messages: req.flash('success'),
+        errors: req.flash('error')
+    });
 });
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
-
-    // Validate username and password
     if (!username || !password) {
         req.flash('error', 'All fields are required.');
         return res.redirect('/login');
     }
-
     const sql = 'SELECT * FROM users WHERE username = ? AND password = SHA1(?)';
     connection.query(sql, [username, password], (err, results) => {
-        if (err) {
-            throw err;
-        }
-
+        if (err) throw err;
         if (results.length > 0) {
-            // Successful login
-            req.session.user = results[0]; 
+            req.session.user = results[0];
             req.flash('success', 'Login successful!');
-            if(req.session.user.role == 'user')
-                res.redirect('/shopping');
-            else
+            if (req.session.user.role === 'admin') {
                 res.redirect('/admin');
+            } else {
+                res.redirect('/shopping');
+            }
         } else {
-            // Invalid credentials
-            req.flash('error', 'Invalid email or password.');
+            req.flash('error', 'Invalid username or password.');
             res.redirect('/login');
         }
     });
 });
 
 app.get('/shopping', checkAuthenticated, (req, res) => {
-    // Fetch data from MySQL
-    connection.query('SELECT * FROM products', (error, results) => {
+    connection.query('SELECT * FROM books', (error, results) => {
         if (error) throw error;
-        res.render('shopping', { user: req.session.user, products: results });
-      });
+        res.render('shopping', { user: req.session.user, books: results });
+    });
 });
 
 app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
-    const productId = parseInt(req.params.id);
+    const bookId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1;
-
-    connection.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
+    connection.query('SELECT * FROM books WHERE bookId = ?', [bookId], (error, results) => {
         if (error) throw error;
-
         if (results.length > 0) {
-            const product = results[0];
-
-            // Initialize cart in session if not exists
-            if (!req.session.cart) {
-                req.session.cart = [];
-            }
-
-            // Check if product already in cart
-            const existingItem = req.session.cart.find(item => item.productId === productId);
+            const book = results[0];
+            if (!req.session.cart) req.session.cart = [];
+            const existingItem = req.session.cart.find(item => item.bookId === bookId);
             if (existingItem) {
                 existingItem.quantity += quantity;
             } else {
                 req.session.cart.push({
-                    productId: product.productId,
-                    productName: product.productName,
-                    price: product.price,
+                    bookId: book.bookId,
+                    bookName: book.bookName,
+                    price: book.price,
                     quantity: quantity,
-                    image: product.image
+                    image: book.image
                 });
             }
-
             res.redirect('/cart');
         } else {
-            res.status(404).send("Product not found");
+            res.status(404).send("Book not found");
         }
     });
 });
@@ -231,89 +174,58 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/book/:id', checkAuthenticated, (req, res) => {
-  // Extract the book ID from the request parameters
-  const bookId = req.params.id;
-
-  // Fetch data from MySQL based on the book ID
-  connection.query('SELECT * FROM books WHERE bookId = ?', [bookId], (error, results) => {
-      if (error) throw error;
-
-      // Check if any book with the given ID was found
-      if (results.length > 0) {
-          // Render HTML page with the book data
-          res.render('book', { book: results[0], user: req.session.user  });
-      } else {
-          // If no book with the given ID was found, render a 404 page or handle it accordingly
-          res.status(404).send('book not found');
-      }
-  });
+    const bookId = req.params.id;
+    connection.query('SELECT * FROM books WHERE bookId = ?', [bookId], (error, results) => {
+        if (error) throw error;
+        if (results.length > 0) {
+            res.render('book', { book: results[0], user: req.session.user });
+        } else {
+            res.status(404).send('Book not found');
+        }
+    });
 });
 
 app.get('/addBook', checkAuthenticated, checkAdmin, (req, res) => {
-    res.render('addBook', {user: req.session.user } ); 
+    res.render('addBook', { user: req.session.user });
 });
 
-app.post('/addBook', upload.single('image'),  (req, res) => {
-    // Extract book data from the request body
-    const { name, quantity, price} = req.body;
-    let image;
-    if (req.file) {
-        image = req.file.filename; // Save only the filename
-    } else {
-        image = null;
-    }
-
+app.post('/addBook', upload.single('image'), (req, res) => {
+    const { name, quantity, price } = req.body;
+    let image = req.file ? req.file.filename : null;
     const sql = 'INSERT INTO books (bookName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    // Insert the new book into the database
-    connection.query(sql , [name, quantity, price, image], (error, results) => {
+    connection.query(sql, [name, quantity, price, image], (error, results) => {
         if (error) {
-            // Handle any error that occurs during the database operation
             console.error("Error adding book:", error);
             res.status(500).send('Error adding book');
         } else {
-            // Send a success response
             res.redirect('/admin');
         }
     });
 });
 
-app.get('/updateProduct/:id',checkAuthenticated, checkAdmin, (req,res) => {
-    const productId = req.params.id;
-    const sql = 'SELECT * FROM products WHERE productId = ?';
-
-    // Fetch data from MySQL based on the product ID
-    connection.query(sql , [productId], (error, results) => {
+app.get('/updateBook/:id', checkAuthenticated, checkAdmin, (req, res) => {
+    const bookId = req.params.id;
+    connection.query('SELECT * FROM books WHERE bookId = ?', [bookId], (error, results) => {
         if (error) throw error;
-
-        // Check if any product with the given ID was found
         if (results.length > 0) {
-            // Render HTML page with the product data
-            res.render('updateProduct', { product: results[0] });
+            res.render('updateBook', { book: results[0] });
         } else {
-            // If no product with the given ID was found, render a 404 page or handle it accordingly
-            res.status(404).send('Product not found');
+            res.status(404).send('Book not found');
         }
     });
 });
 
-app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
-    const productId = req.params.id;
-    // Extract product data from the request body
+app.post('/updateBook/:id', upload.single('image'), (req, res) => {
+    const bookId = req.params.id;
     const { name, quantity, price } = req.body;
-    let image  = req.body.currentImage; //retrieve current image filename
-    if (req.file) { //if new image is uploaded
-        image = req.file.filename; // set image to be new image filename
-    } 
-
-    const sql = 'UPDATE products SET productName = ? , quantity = ?, price = ?, image =? WHERE productId = ?';
-    // Insert the new product into the database
-    connection.query(sql, [name, quantity, price, image, productId], (error, results) => {
+    let image = req.body.currentImage;
+    if (req.file) image = req.file.filename;
+    const sql = 'UPDATE books SET bookName = ?, quantity = ?, price = ?, image = ? WHERE bookId = ?';
+    connection.query(sql, [name, quantity, price, image, bookId], (error, results) => {
         if (error) {
-            // Handle any error that occurs during the database operation
-            console.error("Error updating product:", error);
-            res.status(500).send('Error updating product');
+            console.error("Error updating book:", error);
+            res.status(500).send('Error updating book');
         } else {
-            // Send a success response
             res.redirect('/admin');
         }
     });
@@ -321,14 +233,11 @@ app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
 
 app.get('/deleteBook/:id', (req, res) => {
     const bookId = req.params.id;
-
     connection.query('DELETE FROM books WHERE bookId = ?', [bookId], (error, results) => {
         if (error) {
-            // Handle any error that occurs during the database operation
             console.error("Error deleting book:", error);
             res.status(500).send('Error deleting book');
         } else {
-            // Send a success response
             res.redirect('/admin');
         }
     });
