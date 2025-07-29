@@ -97,7 +97,7 @@ app.get('/',  (req, res) => {
 // Query function logic
 
 app.get("/:role/search", checkAuthenticated, (req, res) => {
-    const sql = "SELECT * FROM books WHERE bookName = ?";
+    const sql = "SELECT * FROM products WHERE productName = ?";
     connection.query(sql, [req.query.q]), (err, results) => {
         if (err) {
             throw err;
@@ -107,19 +107,18 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
 
         if (req.baseUrl == "/admin") {
             checkAdmin;
-            res.render("admin", { books: results, user: req.session.id});
+            res.render("admin", { products: results, user: req.session.id});
         } else {
-            res.render("shopping", { books: results, user: req.session.id});
+            res.render("shopping", { products: results, user: req.session.id});
         };
     };
 });
 
 app.get('/admin', checkAuthenticated, checkAdmin, (req, res) => {
-    console.log("test1")
     // Fetch data from MySQL
-    connection.query('SELECT * FROM books', (error, results) => {
+    connection.query('SELECT * FROM products', (error, results) => {
       if (error) throw error;
-      res.render('admin', { books: results, user: req.session.user });
+      res.render('admin', { products: results, user: req.session.user });
     });
 });
 
@@ -143,7 +142,6 @@ app.post('/register', validateRegistration, (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-    console.log("test2")
     res.render('login', { messages: req.flash('success'), errors: req.flash('error') });
 });
 
