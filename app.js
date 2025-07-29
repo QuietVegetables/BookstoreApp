@@ -164,7 +164,7 @@ app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
                     bookName: book.bookName,
                     price: book.price,
                     quantity: quantity,
-                    image: book.image
+                    image: book.image,
                     category: book.category
                 });
             }
