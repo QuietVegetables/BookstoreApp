@@ -165,6 +165,7 @@ app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
                     price: book.price,
                     quantity: quantity,
                     image: book.image,
+                    category: book.category
                 });
             }
             res.redirect('/cart');
