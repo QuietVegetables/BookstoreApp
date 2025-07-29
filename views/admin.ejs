@@ -37,6 +37,7 @@
           <tr>
             <th width="100">Book Title</th>
             <th width="100">Cover</th>
+            <th width="100">Category</th>
             <th width="50">Quantity</th>
             <th width="50">Price</th>
             <th width="50">Edit</th>
@@ -48,6 +49,7 @@
           <tr>
             <td><a href="/book/<%= books[i].bookId %>" ><%= books[i].bookName %></a></td>
             <td><img src = "images/<%= books[i].image %>" width="20%"></td>
+            <td><%= books[i].category %></td>
             <td><%= books[i].quantity %></td>
             <td>$<%= books[i].price.toFixed(2) %></td>
             <!-- Edit Link -->

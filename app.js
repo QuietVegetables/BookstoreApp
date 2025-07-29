@@ -165,6 +165,7 @@ app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
                     price: book.price,
                     quantity: quantity,
                     image: book.image
+                    category: book.category
                 });
             }
             res.redirect('/cart');
@@ -203,8 +204,8 @@ app.get('/addBook', checkAuthenticated, checkAdmin, (req, res) => {
 app.post('/addBook', upload.single('image'), (req, res) => {
     const { name, quantity, price } = req.body;
     let image = req.file ? req.file.filename : null;
-    const sql = 'INSERT INTO books (bookName, quantity, price, image) VALUES (?, ?, ?, ?)';
-    connection.query(sql, [name, quantity, price, image], (error, results) => {
+    const sql = 'INSERT INTO books (bookName, quantity, price, image, category) VALUES (?, ?, ?, ?, ?)';
+    connection.query(sql, [name, quantity, price, image, category], (error, results) => {
         if (error) {
             console.error("Error adding book:", error);
             res.status(500).send('Error adding book');
@@ -231,9 +232,9 @@ app.get('/books/edit/:id', checkAuthenticated, checkAdmin, (req, res) => {
 });
 
 app.post('/books/edit/:id', checkAuthenticated, checkAdmin, (req, res) => {
-    const { bookName, quantity, price, description } = req.body;
-    const sql = "UPDATE books SET bookName = ?, quantity = ?, price = ?, description = ? WHERE bookId = ?";
-    const values = [bookName, quantity, price, description, req.params.id];
+    const { bookName, quantity, price, image, category } = req.body;
+    const sql = "UPDATE books SET bookName = ?, quantity = ?, price = ?, image = ?, category = ? WHERE bookId = ?";
+    const values = [bookName, quantity, price, image, category, req.params.id];
 
     connection.query(sql, values, (err) => {
         if (err) return res.send('Failed to update book');
@@ -255,11 +256,11 @@ app.get('/updateBook/:id', checkAuthenticated, checkAdmin, (req, res) => {
 
 app.post('/updateBook/:id', upload.single('image'), (req, res) => {
     const bookId = req.params.id;
-    const { name, quantity, price } = req.body;
+    const { name, quantity, price, category } = req.body;
     let image = req.body.currentImage;
     if (req.file) image = req.file.filename;
-    const sql = 'UPDATE books SET bookName = ?, quantity = ?, price = ?, image = ? WHERE bookId = ?';
-    connection.query(sql, [name, quantity, price, image, bookId], (error, results) => {
+    const sql = 'UPDATE books SET bookName = ?, quantity = ?, price = ?, image = ?, category = ?, WHERE bookId = ?';
+    connection.query(sql, [name, quantity, price, image, category, bookId], (error, results) => {
         if (error) {
             console.error("Error updating book:", error);
             res.status(500).send('Error updating book');
