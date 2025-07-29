@@ -83,7 +83,7 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
         checkAdmin
         res.render("admin", { books: results, user: req.session.user});
     })
-}))
+});
 
 app.get('/admin', checkAuthenticated, checkAdmin, (req, res) => {
     connection.query('SELECT * FROM books', (error, results) => {
