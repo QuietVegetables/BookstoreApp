@@ -74,6 +74,15 @@ app.get('/', (req, res) => {
     res.render('index', { user: req.session.user });
 });
 
+// Query logic
+
+app.get("/:role/search", (req, res => {
+    const sql = "SELECT * FROM books WHERE bookName = ?";
+    connection.query(sql, [req.query.q], (err, res) => {
+        if (err) throw err;
+    })
+}))
+
 app.get('/admin', checkAuthenticated, checkAdmin, (req, res) => {
     connection.query('SELECT * FROM books', (error, results) => {
         if (error) throw error;
