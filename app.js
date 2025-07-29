@@ -256,6 +256,7 @@ app.get('/updateBook/:id', checkAuthenticated, checkAdmin, (req, res) => {
 
 app.post('/updateBook/:id', upload.single('image'), (req, res) => {
     const bookId = req.params.id;
+    parseInt(bookId);
     const { name, quantity, price, category } = req.body;
     let image = req.body.currentImage;
     if (req.file) image = req.file.filename;
