@@ -108,6 +108,13 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
+    // Delete later
+    const sqltemp = "ALTER TABLE products RENAME TO books";
+    connection.query(sqltemp, (err, res) => {
+        if (err) throw err;
+        console.log("Successfully renamed table to books.")
+    })
+
     // Validate username and password
     if (!username || !password) {
         req.flash('error', 'All fields are required.');
