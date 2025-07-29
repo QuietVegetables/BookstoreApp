@@ -1,0 +1,17 @@
+<h1>Book List</h1>
+<table>
+  <tr>
+    <th>Title</th><th>Quantity</th><th>Price</th><th>Actions</th>
+  </tr>
+  <% books.forEach(book => { %>
+    <tr>
+      <td><%= book.bookName %></td>
+      <td><%= book.quantity %></td>
+      <td>$<%= book.price %></td>
+      <td>
+        <a href="/books/edit/<%= book.bookId %>">Edit</a>
+        <a href="/deleteBook/<%= book.bookId %>">Delete</a>
+      </td>
+    </tr>
+  <% }) %>
+</table>
