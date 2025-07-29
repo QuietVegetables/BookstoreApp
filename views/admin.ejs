@@ -44,16 +44,16 @@
           </tr>
       </thead>
       <tbody>
-        <% for(let i=0; i < products.length; i++) { %>
+        <% for(let i=0; i < books.length; i++) { %>
           <tr>
-            <td><a href="/product/<%= products[i].productId %>" ><%= products[i].productName %></a></td>
-            <td><img src = "images/<%= products[i].image %>" width="20%"></td>
-            <td><%= products[i].quantity %></td>
-            <td>$<%= products[i].price.toFixed(2) %></td>
+            <td><a href="/book/<%= books[i].bookId %>" ><%= products[i].productName %></a></td>
+            <td><img src = "images/<%= books[i].image %>" width="20%"></td>
+            <td><%= books[i].quantity %></td>
+            <td>$<%= books[i].price.toFixed(2) %></td>
             <!-- Edit Link -->
-            <td><a href="/updateProduct/<%= products[i].productId %>">Edit</a></td>
+            <td><a href="/updateBook/<%= books[i].bookId %>">Edit</a></td>
             <!-- Delete Link -->
-            <td><a href="/deleteProduct/<%= products[i].productId %>" onclick="return confirm('Are you sure you want to delete this product?')">Delete</a></td>
+            <td><a href="/deleteBook/<%= books[i].bookId %>" onclick="return confirm('Are you sure you want to delete this book?')">Delete</a></td>
           </tr>
         <% } %>
       </tbody>
