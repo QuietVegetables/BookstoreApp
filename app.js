@@ -76,11 +76,11 @@ app.get('/', (req, res) => {
 
 // Query logic
 
-app.get("/:role/search", (req, res => {
+app.get("/:role/search", checkAuthenticated, (req, res) => {
     const sql = "SELECT * FROM books WHERE bookName = ?";
     connection.query(sql, [req.query.q], (err, results) => {
         if (err) throw err;
-
+        checkAdmin
         res.render("admin", { books: results, user: req.session.user});
     })
 }))
