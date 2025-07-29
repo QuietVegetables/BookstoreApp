@@ -76,12 +76,12 @@ app.get('/', (req, res) => {
 
 // Query logic
 
-// app.get("/:role/search", (req, res => {
-//     const sql = "SELECT * FROM books WHERE bookName = ?";
-//     connection.query(sql, [req.query.q], (err, res) => {
-//         if (err) throw err;
-//     })
-// }))
+app.get("/:role/search", (req, res => {
+    const sql = "SELECT * FROM books WHERE bookName = ?";
+    connection.query(sql, [req.query.q], (err, res) => {
+        if (err) throw err;
+    })
+}))
 
 app.get('/admin', checkAuthenticated, checkAdmin, (req, res) => {
     connection.query('SELECT * FROM books', (error, results) => {
