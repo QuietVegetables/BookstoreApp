@@ -256,11 +256,10 @@ app.get('/updateBook/:id', checkAuthenticated, checkAdmin, (req, res) => {
 
 app.post('/updateBook/:id', upload.single('image'), (req, res) => {
     const bookId = req.params.id;
-    parseInt(bookId);
     const { name, quantity, price, category } = req.body;
     let image = req.body.currentImage;
     if (req.file) image = req.file.filename;
-    const sql = 'UPDATE books SET bookName = ?, quantity = ?, price = ?, image = ?, category = ?, WHERE bookId = ?';
+    const sql = 'UPDATE books SET bookName = ?, quantity = ?, price = ?, image = ?, category = ? WHERE bookId = ?';
     connection.query(sql, [name, quantity, price, image, category, bookId], (error, results) => {
         if (error) {
             console.error("Error updating book:", error);
