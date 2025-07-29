@@ -39,7 +39,7 @@
             <th width="100">Book Image</th>
             <th width="50">Quantity</th>
             <th width="50">Price</th>
-            <th width="50">Quantity</th>
+            <th width="50">Category</th>
             <th width="50">Buy</th>
           </tr>
       </thead>
@@ -50,6 +50,7 @@
             <td><img src = "images/<%= books[i].image %>" width="20%"></td>
             <td><%= books[i].quantity %></td>
             <td>$<%= books[i].price.toFixed(2) %></td>
+            <td><%= books[i].category %></td>
             <!-- <td>
               <select id="role" name="role" class="form-control" >
                 <option value="1" selected >1</option>
