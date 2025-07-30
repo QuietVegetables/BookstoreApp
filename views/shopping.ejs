@@ -22,17 +22,6 @@
             <li class="nav-item">
               <a class="nav-link" href="/logout">Logout</a>
             </li>
-            <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-             data-bs-toggle="dropdown" aria-expanded="false">
-            Categories
-          </a>
-          <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
-            <li><a class="dropdown-item" href="/shopping/search?category=Fiction">Fiction</a></li>
-            <li><a class="dropdown-item" href="/shopping/search?category=Educational">Educational</a></li>
-            <li><a class="dropdown-item" href="/shopping/search?category=Children">Children</a></li>
-          </ul>
-        </li>
           </ul>
         </div>
       </div>
@@ -45,9 +34,15 @@
     <br>
 
     <!-- Search -->
-    <form action="/user/search" method="GET" class="mb-4">
+    <form action="/admin/search" method="GET" class="mb-4">
       <div class="input-group">
-        <input type="text" class="form-control" name="q" placeholder="Search books..." required>
+        <input type="text" class="form-control" name="q" placeholder="Search books..." col="9" required>
+        <select class="form-select-sm" name="category" >
+          <option value="">Categories</option>
+          <option value="Fiction">Fiction</option>
+          <option value="Educational">Educational</option>
+          <option value="Children">Children</option>
+        </select>
         <button class="btn btn-dark" type="submit">Search</button>
       </div>
     </form>
