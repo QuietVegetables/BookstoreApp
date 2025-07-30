@@ -92,7 +92,7 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
         params.push(searchTerm)
     }
     console.log(sql, params)
-    connection.query(sql, [params], (err, results) => {
+    connection.query(sql, params, (err, results) => {
         if (err) throw err;
         checkAdmin
         res.render("admin", { books: results, user: req.session.user});
