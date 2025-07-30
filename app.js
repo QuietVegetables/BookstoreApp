@@ -77,7 +77,7 @@ app.get('/', (req, res) => {
 // Query logic
 
 app.get("/:role/search", checkAuthenticated, (req, res) => {
-    const sql = "SELECT * FROM books WHERE bookName = ?";
+    const sql = "SELECT * FROM books WHERE CONTAINS (bookName, '?')";
     connection.query(sql, [req.query.q], (err, results) => {
         if (err) throw err;
         checkAdmin
