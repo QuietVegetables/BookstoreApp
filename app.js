@@ -77,8 +77,9 @@ app.get('/', (req, res) => {
 // Query logic
 
 app.get("/:role/search", checkAuthenticated, (req, res) => {
-    const sql = "SELECT * FROM books WHERE bookName LIKE %?%";
-    connection.query(sql, [req.query.q], (err, results) => {
+    const sql = "SELECT * FROM books WHERE bookName LIKE ?";
+    const searchTerm = `%${req.query.q}%`
+    connection.query(sql, [searchTerm], (err, results) => {
         if (err) throw err;
         checkAdmin
         res.render("admin", { books: results, user: req.session.user});
