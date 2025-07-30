@@ -77,7 +77,7 @@ app.get('/', (req, res) => {
 // Query logic
 
 app.get("/:role/search", checkAuthenticated, (req, res) => {
-    const sql = "SELECT * FROM books WHERE bookName LIKE ?";
+    let sql = "SELECT * FROM books WHERE bookName LIKE ?";
     const searchTerm = `%${req.query.q}%`;
     const categoryTerm = req.query.category;
     let params = []
