@@ -74,21 +74,13 @@
             <!-- Buy Link -->
             <!-- <td><a href="/buyBook/<%#= books[i].bookId %>" class="btn btn-primary mt-3">Buy</a></td> -->
             <td>
-              <select class="form-control" onchange="document.getElementById('quantity-<%= books[i].bookId %>').value = this.value">
-                <% for (let q = 1; q <= 5; q++) { %>
-                  <option value="<%= q %>"><%= q %></option>
-                <% } %>
-              </select>
-            </td>
-
-            <td>
-              <form action="/add-to-cart/<%= books[i].bookId %>" method="POST">
-                <select name="quantity" class="form-control mb-2">
+              <form action="/add-to-cart/<%= books[i].bookId %>" method="POST" class="d-flex flex-column align-items-center gap-2">
+                <select name="quantity" class="form-control form-select w-auto">
                   <% for (let q = 1; q <= 5; q++) { %>
                     <option value="<%= q %>"><%= q %></option>
                   <% } %>
                 </select>
-                <button type="submit" class="btn btn-primary">Buy</button>
+                <button type="submit" class="btn btn-primary btn-sm">Buy</button>
               </form>
             </td>
 
