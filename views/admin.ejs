@@ -45,9 +45,15 @@
     <br>
 
     <!-- Search -->
-    <form action="search" method="GET" class="mb-4">
+    <form action="/admin/search" method="GET" class="mb-4">
       <div class="input-group">
-        <input type="text" class="form-control" name="q" placeholder="Search books..." required>
+        <input type="text" class="form-control" name="q" placeholder="Search books..." col="9" required>
+        <select class="form-select-sm" name="category" >
+          <option value="">Categories</option>
+          <option value="Fiction">Fiction</option>
+          <option value="Educational">Educational</option>
+          <option value="Children">Children</option>
+        </select>
         <button class="btn btn-dark" type="submit">Search</button>
       </div>
     </form>
