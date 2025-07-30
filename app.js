@@ -81,6 +81,7 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
     const searchTerm = `%${req.query.q}%`;
     const categoryTerm = req.query.category;
     let params = []
+    console.log(searchTerm, categoryTerm)
     if (categoryTerm && searchTerm) {
         sql += "AND category = ?"
         params.push(searchTerm, categoryTerm)
@@ -90,6 +91,7 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
     } else {
         params.push(searchTerm)
     }
+    console.log(sql, params)
     connection.query(sql, [params], (err, results) => {
         if (err) throw err;
         checkAdmin
