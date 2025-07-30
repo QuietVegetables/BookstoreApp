@@ -1,6 +1,1 @@
-
-
-
-
-
-Search function is incomplete, running into issues where website hangs.
+Bookstore webapp with basic CRUD operations, role-based authorization, and query functions and more.
