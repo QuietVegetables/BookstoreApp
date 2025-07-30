@@ -17,10 +17,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 const connection = mysql.createConnection({
-    host: 'c237-e65p.mysql.database.azure.com',
-    port: 3306,
-    user: 'c237user',
-    password: 'c2372025!',
+    host: 'tyg4xa.h.filess.io',
+    port: 3307,
+    user: 'C237database_structure',
+    password: 'e73f388370e198a96e7777b8bf7b3a1516849323',
     database: 'C237database_structure'
 });
 
@@ -77,22 +77,8 @@ app.get('/', (req, res) => {
 // Query logic
 
 app.get("/:role/search", checkAuthenticated, (req, res) => {
-    let sql = "SELECT * FROM books WHERE bookName LIKE ?";
-    const searchTerm = `%${req.query.q}%`;
-    const categoryTerm = req.query.category;
-    let params = []
-    console.log(searchTerm, categoryTerm)
-    if (categoryTerm && searchTerm) {
-        sql += "AND category = ?"
-        params.push(searchTerm, categoryTerm)
-    } else if (categoryTerm) {
-        sql = "SELECT * FROM books WHERE category = ?";
-        params.push(categoryTerm)
-    } else {
-        params.push(searchTerm)
-    }
-    console.log(sql, params)
-    connection.query(sql, params, (err, results) => {
+    const sql = "SELECT * FROM books WHERE bookName = ?";
+    connection.query(sql, [req.query.q], (err, results) => {
         if (err) throw err;
         checkAdmin
         res.render("admin", { books: results, user: req.session.user});
@@ -206,7 +192,7 @@ app.get('/book/:id', checkAuthenticated, (req, res) => {
     connection.query('SELECT * FROM books WHERE bookId = ?', [bookId], (error, results) => {
         if (error) throw error;
         if (results.length > 0) {
-            res.render('books', { book: results[0], user: req.session.user });
+            res.render('book', { book: results[0], user: req.session.user });
         } else {
             res.status(404).send('Book not found');
         }
@@ -218,9 +204,8 @@ app.get('/addBook', checkAuthenticated, checkAdmin, (req, res) => {
 });
 
 app.post('/addBook', upload.single('image'), (req, res) => {
-    const { name, quantity, price, category } = req.body;
+    const { name, quantity, price } = req.body;
     let image = req.file ? req.file.filename : null;
-
     const sql = 'INSERT INTO books (bookName, quantity, price, image, category) VALUES (?, ?, ?, ?, ?)';
     connection.query(sql, [name, quantity, price, image, category], (error, results) => {
         if (error) {
@@ -299,5 +284,50 @@ app.get('/deleteBook/:id', (req, res) => {
     });
 });
 
+// Show user management page
+app.get('/manageuser', checkAuthenticated, checkAdmin, (req, res) => {
+    connection.query('SELECT * FROM users', (err, results) => {
+        if (err) throw err;
+        res.render('manageUser', { users: results });
+    });
+});
+
+// View manage users
+app.get('/manageuser', checkAuthenticated, checkAdmin, (req, res) => {
+  connection.query('SELECT * FROM users', (err, results) => {
+    if (err) throw err;
+    res.render('manageUser', { users: results, user: req.session.user });
+  });
+});
+
+// Add new user
+app.post('/admin/users/add', checkAuthenticated, checkAdmin, (req, res) => {
+  const { username, email, password, address, contact, role } = req.body;
+  const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, SHA1(?), ?, ?, ?)';
+  connection.query(sql, [username, email, password, address, contact, role], (err) => {
+    if (err) throw err;
+    res.redirect('/manageuser');
+  });
+});
+
+// Update user
+app.post('/admin/users/update/:id', checkAuthenticated, checkAdmin, (req, res) => {
+  const { username, email, address, contact, role } = req.body;
+  const sql = 'UPDATE users SET username=?, email=?, address=?, contact=?, role=? WHERE id=?';
+  connection.query(sql, [username, email, address, contact, role, req.params.id], (err) => {
+    if (err) throw err;
+    res.redirect('/manageuser');
+  });
+});
+
+// Delete user
+app.post('/admin/users/delete/:id', checkAuthenticated, checkAdmin, (req, res) => {
+  connection.query('DELETE FROM users WHERE id = ?', [req.params.id], (err) => {
+    if (err) throw err;
+    res.redirect('/manageuser');
+  });
+});
+
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
