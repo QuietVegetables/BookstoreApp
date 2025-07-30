@@ -92,8 +92,11 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
     }
     connection.query(sql, params, (err, results) => {
         if (err) throw err;
-        checkAdmin
-        res.render("admin", { books: results, user: req.session.user });
+        if (req.baseUrl == "/admin") {
+            res.render("admin", { books: results, user: req.session.user });
+        } else {
+            res.render("shopping", { books: results, user: req.session.user })
+        }
     })
 });
 
