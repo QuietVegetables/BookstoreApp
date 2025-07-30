@@ -205,8 +205,9 @@ app.get('/addBook', checkAuthenticated, checkAdmin, (req, res) => {
 });
 
 app.post('/addBook', upload.single('image'), (req, res) => {
-    const { name, quantity, price } = req.body;
+    const { name, quantity, price, category } = req.body;
     let image = req.file ? req.file.filename : null;
+
     const sql = 'INSERT INTO books (bookName, quantity, price, image, category) VALUES (?, ?, ?, ?, ?)';
     connection.query(sql, [name, quantity, price, image, category], (error, results) => {
         if (error) {
