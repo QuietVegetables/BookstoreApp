@@ -85,7 +85,7 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
     if (categoryTerm && searchTerm) {
         sql += "AND category = ?"
         params.push(searchTerm, categoryTerm)
-    } else if (!searchTerm) {
+    } else if (categoryTerm) {
         sql = "SELECT * FROM books WHERE category = ?";
         params.push(categoryTerm)
     } else {
