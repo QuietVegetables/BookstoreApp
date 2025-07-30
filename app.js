@@ -284,21 +284,14 @@ app.get('/deleteBook/:id', (req, res) => {
     });
 });
 
-// Show user management page
+//manageuser route
 app.get('/manageuser', checkAuthenticated, checkAdmin, (req, res) => {
     connection.query('SELECT * FROM users', (err, results) => {
         if (err) throw err;
-        res.render('manageuser', { users: results });
+        res.render('manageuser', { users: results, user: req.session.user });
     });
 });
 
-// View manage users
-app.get('/manageuser', checkAuthenticated, checkAdmin, (req, res) => {
-  connection.query('SELECT * FROM users', (err, results) => {
-    if (err) throw err;
-    res.render('manageuser', { users: results, user: req.session.user });
-  });
-});
 
 // Add new user
 app.post('/admin/users/add', checkAuthenticated, checkAdmin, (req, res) => {
