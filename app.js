@@ -92,7 +92,8 @@ app.get("/:role/search", checkAuthenticated, (req, res) => {
     }
     connection.query(sql, params, (err, results) => {
         if (err) throw err;
-        if (req.baseUrl == "/admin") {
+        console.log(req.params.role)
+        if (req.params.role == "admin") {
             res.render("admin", { books: results, user: req.session.user });
         } else {
             res.render("shopping", { books: results, user: req.session.user })
