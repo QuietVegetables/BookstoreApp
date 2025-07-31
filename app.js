@@ -21,7 +21,10 @@ const connection = mysql.createConnection({
     port: 3306,
     user: 'c237student',
     password: 'c237student!',
-    database: 'c237team3_e65pdatabase'
+    database: 'c237team3_e65pdatabase',
+    ssl: {
+        rejectUnauthorized : true
+    }
 });
 
 connection.connect((err) => {
