@@ -80,11 +80,27 @@ app.get('/', (req, res) => {
 // Query logic
 
 app.get("/:role/search", checkAuthenticated, (req, res) => {
-    const sql = "SELECT * FROM books WHERE bookName = ?";
-    connection.query(sql, [req.query.q], (err, results) => {
+    let sql = "SELECT * FROM books WHERE bookName LIKE ?";
+    const searchTerm = `%${req.query.q}%`;
+    const categoryTerm = req.query.category;
+    let params = []
+    if (categoryTerm && req.query.q) {
+        sql += " AND category = ?"
+        params.push(searchTerm, categoryTerm)
+    } else if (categoryTerm) {
+        sql = "SELECT * FROM books WHERE category = ?";
+        params.push(categoryTerm)
+    } else {
+        params.push(searchTerm)
+    }
+    connection.query(sql, params, (err, results) => {
         if (err) throw err;
-        checkAdmin
-        res.render("admin", { books: results, user: req.session.user});
+        console.log(req.params.role)
+        if (req.params.role == "admin") {
+            res.render("admin", { books: results, user: req.session.user });
+        } else {
+            res.render("shopping", { books: results, user: req.session.user })
+        }
     })
 });
 
