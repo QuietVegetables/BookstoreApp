@@ -307,7 +307,7 @@ app.get('/deleteBook/:id', (req, res) => {
 app.get('/manageuser', checkAuthenticated, checkAdmin, (req, res) => {
   connection.query('SELECT * FROM users', (err, results) => {
     if (err) throw err;
-    res.render('manageUser', { users: results, user: req.session.user });
+    res.render('manageuser', { users: results, user: req.session.user });
   });
 });
 
