@@ -20,7 +20,7 @@ const connection = mysql.createConnection({
     host: 'c237web.mysql.database.azure.com',
     port: 3306,
     user: 'c237student',
-    password: 'c2372025!',
+    password: 'c237student!',
     database: 'c237team3_e65pdatabase'
 });
 
